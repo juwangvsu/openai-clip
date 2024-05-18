@@ -7,11 +7,13 @@ from tqdm import tqdm
 import torch
 from torch import nn
 from transformers import DistilBertTokenizer
-
+import itertools
 import config as CFG
 from dataset import CLIPDataset, get_transforms
 from CLIP import CLIPModel
 from utils import AvgMeter, get_lr
+from inference import *
+import argparse
 
 
 def make_train_valid_dfs():
@@ -79,6 +81,16 @@ def valid_epoch(model, valid_loader):
     return loss_meter
 
 
+def run_inference(paramfn="best.pt"):
+    _, valid_df = make_train_valid_dfs()
+    print(valid_df)
+    model, image_embeddings = get_image_embeddings(valid_df, paramfn)
+    find_matches(model,
+             image_embeddings,
+             query="a group of people dancing in a party",
+             image_filenames=valid_df['image'].values,
+             n=9)
+
 def main():
     train_df, valid_df = make_train_valid_dfs()
     tokenizer = DistilBertTokenizer.from_pretrained(CFG.text_tokenizer)
@@ -87,9 +99,19 @@ def main():
 
 
     model = CLIPModel().to(CFG.device)
+    params = [
+        {"params": model.image_encoder.parameters(), "lr": CFG.image_encoder_lr},
+        {"params": model.text_encoder.parameters(), "lr": CFG.text_encoder_lr},
+        {"params": itertools.chain(
+            model.image_projection.parameters(), model.text_projection.parameters()
+        ), "lr": CFG.head_lr, "weight_decay": CFG.weight_decay}
+    ]
     optimizer = torch.optim.AdamW(
-        model.parameters(), lr=CFG.lr, weight_decay=CFG.weight_decay
+        params, lr=CFG.lr, weight_decay=CFG.weight_decay
     )
+    #optimizer = torch.optim.AdamW(
+    #    model.parameters(), lr=CFG.lr, weight_decay=CFG.weight_decay
+    #)
     lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", patience=CFG.patience, factor=CFG.factor
     )
@@ -111,4 +133,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="main script .")
+    parser.add_argument("--directory", type=str, default="/media/student/datavision/save_wipe_1-14/save_data_wipe_1-14_01", help="Directory with saved data")
+    parser.add_argument("--mode", type=str, default="train", help="Directory with saved data")
+    parser.add_argument("--paramfn", type=str, default="best.pt", help="Directory with saved data")
+
+    args = parser.parse_args()
+
+    if args.mode=="train":
+        main()
+    else:
+        run_inference(args.paramfn)
