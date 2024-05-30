@@ -1,3 +1,7 @@
+------------- 5/29/24 retest on navy lap ----------------
+/data/clipdata
+~/Document/openai-clip
+
 ------------- 5/18/24 run notebook locally ----------------
 hpzbook: openmmlab
 

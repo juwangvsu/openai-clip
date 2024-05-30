@@ -1,9 +1,11 @@
 import torch
 
 debug = False 
-image_path = "/media/student/isaacsim/clipdata/Images"
+image_path = "/data/clipdata/Images"
+#image_path = "/media/student/isaacsim/clipdata/Images"
 #image_path = "C:/Moein/AI/Datasets/Flicker-8k/Images"
-captions_path = "/media/student/isaacsim/clipdata"
+captions_path = "/data/clipdata"
+#captions_path = "/media/student/isaacsim/clipdata"
 #captions_path = "C:/Moein/AI/Datasets/Flicker-8k"
 batch_size = 8 
 num_workers = 4
