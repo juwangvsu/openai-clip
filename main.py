@@ -91,7 +91,7 @@ def run_inference(paramfn="best.pt"):
              image_filenames=valid_df['image'].values,
              n=9)
 
-def main():
+def main(args):
     train_df, valid_df = make_train_valid_dfs()
     tokenizer = DistilBertTokenizer.from_pretrained(CFG.text_tokenizer)
     train_loader = build_loaders(train_df, tokenizer, mode="train")
@@ -99,6 +99,10 @@ def main():
 
 
     model = CLIPModel().to(CFG.device)
+    if args.loadweight:
+        print('load previous weight file')
+        model.load_state_dict(torch.load(args.paramfn, map_location=CFG.device))
+
     params = [
         {"params": model.image_encoder.parameters(), "lr": CFG.image_encoder_lr},
         {"params": model.text_encoder.parameters(), "lr": CFG.text_encoder_lr},
@@ -136,11 +140,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="main script .")
     parser.add_argument("--directory", type=str, default="/media/student/datavision/save_wipe_1-14/save_data_wipe_1-14_01", help="Directory with saved data")
     parser.add_argument("--mode", type=str, default="train", help="Directory with saved data")
+    parser.add_argument('-l', '--loadweight', action='store_true', help="load weight file? use --paramfn if file name not best.pt ")
     parser.add_argument("--paramfn", type=str, default="best.pt", help="Directory with saved data")
 
     args = parser.parse_args()
 
     if args.mode=="train":
-        main()
+        main(args)
     else:
         run_inference(args.paramfn)
