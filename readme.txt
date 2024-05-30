@@ -1,3 +1,14 @@
+
+-----------5/30/29 ------------
+add some stuff to generate data with isaac sim
+see readme in VisionRobot
+	docker-compose-isaacsim.yaml
+	hospital.usd
+test run:
+	start docker compose,
+	load webrtc client to open isaac ui, and load hospital.usd
+	docker exec and and run isaac headless
+	docker exec and run rviz2 to see camera
 ------------- 5/29/24 retest on navy lap ----------------
 /data/clipdata
 ~/Document/openai-clip
