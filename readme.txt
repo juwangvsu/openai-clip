@@ -1,3 +1,13 @@
+----clip main idea ----------------------
+train a network:
+	input: text, image
+	that generate similar text embedding and image embedding
+inference:
+	find images that match text description:
+		forward network to produce text embedding
+		generate all image embedding from valid_df (or entire dataset)
+		calculate cosine similarity btw text embedding and the image embeddings
+		pick the top 9 matches
 
 -----------5/30/29 ------------
 add some stuff to generate data with isaac sim
@@ -12,6 +22,7 @@ test run:
 ------------- 5/29/24 retest on navy lap ----------------
 /data/clipdata
 ~/Document/openai-clip
+	modify image_path and caption_path in config.py
 
 ------------- 5/18/24 run notebook locally ----------------
 hpzbook: openmmlab
